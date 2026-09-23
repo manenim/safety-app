@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { CircleDot, Flag, MapPin } from "lucide-react";
 import type { IncidentView } from "@/domain/types";
 import { label } from "./ui";
 import { loadGoogleMaps } from "@/lib/google-maps-browser";
@@ -146,11 +146,29 @@ export function SignalMap({
               `${endpoint.name}: ${endpoint.label}`,
             );
             el.title = `${endpoint.name}: ${endpoint.label}`;
-            const letter = document.createElement("strong");
-            letter.textContent = endpoint.letter;
-            const name = document.createElement("span");
-            name.textContent = endpoint.name;
-            el.append(letter, name);
+            const svg = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "svg",
+            );
+            svg.setAttribute("viewBox", "0 0 24 24");
+            svg.setAttribute("aria-hidden", "true");
+            svg.setAttribute("fill", "none");
+            svg.setAttribute("stroke", "currentColor");
+            svg.setAttribute("stroke-width", "2");
+            svg.setAttribute("stroke-linecap", "round");
+            svg.setAttribute("stroke-linejoin", "round");
+            const path = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "path",
+            );
+            path.setAttribute(
+              "d",
+              endpoint.letter === "A"
+                ? "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0 M13 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+                : "M4 22V3 M4 3s1-1 4-1 5 2 8 2 4-1 4-1v12s-1 1-4 1-5-2-8-2-4 1-4 1",
+            );
+            svg.append(path);
+            el.append(svg);
             markers.push(
               new marker.AdvancedMarkerElement({
                 map,
@@ -272,14 +290,18 @@ export function SignalMap({
       {geometry && geometry.length > 1 && (
         <div className="map-endpoint-key">
           <span>
-            <b>A</b>
+            <b aria-hidden="true">
+              <CircleDot size={16} />
+            </b>
             <span>
               <strong>Start</strong>
               {originLabel}
             </span>
           </span>
           <span>
-            <b>B</b>
+            <b aria-hidden="true">
+              <Flag size={16} />
+            </b>
             <span>
               <strong>Destination</strong>
               {destinationLabel}
