@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env*
+!.env.example
+envs.txt
+.superpowers/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.data/
+.next-e2e/
+
+.next-loom/
+.next-build-check/
