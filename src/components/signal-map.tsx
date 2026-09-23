@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { IncidentView } from "@/domain/types";
+import { distanceMeters } from "@/domain/geo";
 import { label } from "./ui";
 import { loadGoogleMaps } from "@/lib/google-maps-browser";
 const colors: Record<string, string> = {
@@ -188,6 +189,19 @@ export function SignalMap({
         mappedIncidents.forEach((incident) => {
           const el = document.createElement("a");
           el.className = "map-report-marker";
+          // Keep reports at an endpoint visible above its location pin.
+          if (
+            routeGeometry.length > 1 &&
+            [routeGeometry[0], routeGeometry[routeGeometry.length - 1]].some(
+              (point) =>
+                distanceMeters(point, [
+                  incident.location.longitude!,
+                  incident.location.latitude!,
+                ]) < 200,
+            )
+          ) {
+            el.classList.add("map-report-at-endpoint");
+          }
           const markerLabel = `${incident.title} · ${label(incident.status)}`;
           el.title = markerLabel;
           const svg = document.createElementNS(

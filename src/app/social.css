@@ -1795,6 +1795,20 @@ textarea:focus-visible {
   box-shadow: 0 2px 5px #17202640;
   cursor: pointer;
 }
+.map-report-at-endpoint {
+  position: relative;
+  transform: translateY(-46px);
+}
+.map-report-at-endpoint::after {
+  content: "";
+  position: absolute;
+  top: calc(100% + 3px);
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 46px;
+  background: #64748b;
+  pointer-events: none;
+}
 .map-report-marker svg {
   width: 21px;
   height: 21px;
