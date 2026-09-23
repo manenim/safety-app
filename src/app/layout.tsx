@@ -13,7 +13,7 @@ const font = DM_Sans({
 export const metadata: Metadata = {
   icons: { icon: "/signalcheck-mark.svg" },
   title: {
-    default: "SignalCheck — Community evidence, with context",
+    default: "SignalCheck | Community evidence, with context",
     template: "%s | SignalCheck",
   },
   description:
