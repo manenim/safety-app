@@ -1807,23 +1807,18 @@ textarea:focus-visible {
   outline-offset: 3px;
 }
 .map-endpoint-marker {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  box-sizing: border-box;
-  background: #087b75;
-  border: 3px solid white;
-  border-radius: 50%;
-  color: white;
-  box-shadow: 0 2px 5px #17202630;
+  width: 32px;
+  height: 42px;
+  color: #087b75;
+  filter: drop-shadow(0 2px 3px #17202630);
 }
 .map-endpoint-marker svg {
-  width: 19px;
-  height: 19px;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .map-endpoint-b {
-  background: #172026;
+  color: #172026;
 }
 .map-endpoint-key {
   display: grid;
@@ -1885,9 +1880,6 @@ textarea:focus-visible {
   gap: 0 4px;
 }
 
-.map-endpoint-marker {
-  transform: translateY(42px);
-}
 .route-demo-toggle {
   flex-direction: row !important;
 }

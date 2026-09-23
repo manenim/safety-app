@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CircleDot, Flag, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import type { IncidentView } from "@/domain/types";
 import { label } from "./ui";
 import { loadGoogleMaps } from "@/lib/google-maps-browser";
@@ -150,24 +150,29 @@ export function SignalMap({
               "http://www.w3.org/2000/svg",
               "svg",
             );
-            svg.setAttribute("viewBox", "0 0 24 24");
+            svg.setAttribute("viewBox", "0 0 32 42");
             svg.setAttribute("aria-hidden", "true");
-            svg.setAttribute("fill", "none");
-            svg.setAttribute("stroke", "currentColor");
-            svg.setAttribute("stroke-width", "2");
-            svg.setAttribute("stroke-linecap", "round");
-            svg.setAttribute("stroke-linejoin", "round");
             const path = document.createElementNS(
               "http://www.w3.org/2000/svg",
               "path",
             );
             path.setAttribute(
               "d",
-              endpoint.letter === "A"
-                ? "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0 M13 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
-                : "M4 22V3 M4 3s1-1 4-1 5 2 8 2 4-1 4-1v12s-1 1-4 1-5-2-8-2-4 1-4 1",
+              "M16 40C13 36 2 25 2 16a14 14 0 1 1 28 0c0 9-11 20-14 24Z",
             );
-            svg.append(path);
+            path.setAttribute("fill", "currentColor");
+            path.setAttribute("stroke", "white");
+            path.setAttribute("stroke-width", "2");
+            path.setAttribute("stroke-linejoin", "round");
+            const center = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "circle",
+            );
+            center.setAttribute("cx", "16");
+            center.setAttribute("cy", "16");
+            center.setAttribute("r", "5");
+            center.setAttribute("fill", "white");
+            svg.append(path, center);
             el.append(svg);
             markers.push(
               new marker.AdvancedMarkerElement({
@@ -291,7 +296,7 @@ export function SignalMap({
         <div className="map-endpoint-key">
           <span>
             <b aria-hidden="true">
-              <CircleDot size={16} />
+              <MapPin size={16} />
             </b>
             <span>
               <strong>Start</strong>
@@ -300,7 +305,7 @@ export function SignalMap({
           </span>
           <span>
             <b aria-hidden="true">
-              <Flag size={16} />
+              <MapPin size={16} />
             </b>
             <span>
               <strong>Destination</strong>
