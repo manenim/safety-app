@@ -13,3 +13,14 @@ test-results/
 
 .next-loom/
 .next-build-check/
+
+# Local planning, agent instructions, and design working files.
+/docs/
+/design/
+/.claude/
+/.agents/
+/.agent/
+/.codex/
+*.md
+*.mdx
+!/README.md

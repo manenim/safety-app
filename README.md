@@ -25,11 +25,11 @@ npm run dev
 
 Open http://localhost:3000. The example enables explicit local demo mode. Local fictional data is initialized automatically and persisted in `.data/store.json`. `SIGNALCHECK_DEMO_MODE=true npm run seed` resets local demo fixtures. The six scenarios contain 26 reports, duplicate rumours, weak emerging signals, contradictions, a reopening and stale evidence.
 
-The provided credentials have been mapped into the ignored `.env.local`; the supplied project is configured for real services. `envs.txt` and all secret-bearing env files are ignored. Never commit them. A generated coordinator access code is stored as `COORDINATOR_PASSWORD` in `.env.local`; use it on the Command center sign-in form. Choose your own strong access code and `SESSION_SECRET` before sharing a deployment.
+Store credentials in the ignored `.env.local`. Set your own `COORDINATOR_PASSWORD` for the coordinator sign-in form and a strong, random `SESSION_SECRET` before sharing a deployment. Never commit secret-bearing environment files.
 
 ## Live configuration
 
-Set `SIGNALCHECK_DEMO_MODE=false`, `OPENAI_API_KEY`, `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`), `SUPABASE_SECRET_KEY`, `COORDINATOR_PASSWORD`, and `SESSION_SECRET`. These are validated at server startup. Add `GOOGLE_MAPS_API_KEY` for Places autocomplete, geocoding and routes, plus a separate `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` for the browser map. See [Google Maps setup](docs/GOOGLE-MAPS-SETUP.md). `DATABASE_URL` is used only by migration and seed scripts. `OPENAI_MODEL` defaults to `gpt-4.1-mini`; transcription defaults to `gpt-4o-mini-transcribe`.
+Set `SIGNALCHECK_DEMO_MODE=false`, `OPENAI_API_KEY`, `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`), `SUPABASE_SECRET_KEY`, `COORDINATOR_PASSWORD`, and `SESSION_SECRET`. These are validated at server startup. Add `GOOGLE_MAPS_API_KEY` for Places autocomplete, geocoding and routes, plus a separate `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` for the browser map. See [Google Maps setup](#google-maps-setup). `DATABASE_URL` is used only by migration and seed scripts. `OPENAI_MODEL` defaults to `gpt-4.1-mini`; transcription defaults to `gpt-4o-mini-transcribe`.
 
 Only the browser Google Maps key is exposed to the UI. Restrict it to your deployment domains and Maps JavaScript API. The separate server key is used by the Places, Geocoding and Routes adapters. Server API and Supabase secret keys stay in server-only modules. Quotes around `.env.local` values preserve characters such as `#`; percent-encode special characters in the database URL password.
 
@@ -40,6 +40,17 @@ npm run dev
 ```
 
 Migrations create a private `signalcheck` schema, relational tables, service-role-only transaction RPCs and a private `report-media` bucket. Seeding merges deterministic fictional fixtures and preserves unrelated records. Fixtures retain `isDemo: true` internally; submitted reports never corroborate against them. This screening prototype includes them in route results automatically, without demo badges. A seeded database is useful for demonstrations but should not be presented as a live incident source.
+
+### Google Maps setup
+
+In your Google Cloud project, enable billing and these APIs: **Places API (New)**, **Geocoding API**, **Routes API**, and **Maps JavaScript API**.
+
+- Set `GOOGLE_MAPS_API_KEY` to a server key restricted to Places API (New), Geocoding API, and Routes API. Use IP restrictions when your hosting provides static outbound IPs; website/referrer restrictions do not work for server requests.
+- Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` to a separate browser key restricted to Maps JavaScript API and your website origins. For development, allow `http://localhost:3000/*` and any other local port you use; add your deployed HTTPS domain for hosting.
+- Optionally set `NEXT_PUBLIC_GOOGLE_MAP_ID` to your JavaScript map ID. Otherwise, the app uses Google's `DEMO_MAP_ID`.
+- Restart the development server after changing keys. Rebuild deployed applications when changing the browser key.
+
+Autocomplete searches worldwide. Select a specific landmark or address to retain its Google Place ID and obtain accurate coordinates. Test both autocomplete and a complete route; if suggestions work but the map does not, check the browser key's restrictions.
 
 ## Features
 
@@ -108,16 +119,16 @@ Tests cover evidence states, per-claim perspective, deduplication, matching, fre
 
 1. Create a Supabase project and run `npm run db:migrate` using its Postgres connection URL. Optional `npm run seed` loads clearly fictional examples.
 2. Import this folder into Vercel as a Next.js application. Configure the live environment variables above; use a strong coordinator code/session secret. Keep demo mode **false** for serverless persistence.
-3. Enable the Google APIs and restrict the two keys as described in [Google Maps setup](docs/GOOGLE-MAPS-SETUP.md). Route handlers allow up to 120 seconds for ingestion; choose a hosting plan with suitable request duration limits.
+3. Enable the Google APIs and restrict the two keys as described in [Google Maps setup](#google-maps-setup). Route handlers allow up to 120 seconds for ingestion; choose a hosting plan with suitable request duration limits.
 4. Run a production build and test the deployed report, map and coordinator flows. Standard Vercel function request limits may be below the app's 10 MB ceiling; use smaller files or add signed direct uploads for larger deployments.
 
-Local production: `npm run build && npm start`. This repository has not been published or deployed automatically.
+Local production: `npm run build && npm start`.
 
 ## Limitations and next steps
 
 This is a functional prototype. The repository loads a bounded-project snapshot; production scale needs paginated queries and background processing. Rate limits are process-local; use distributed limits before broad public use. Anonymous users can reset browser identity. No claim of verified identity or resistance to coordinated false reporting is made. The category-based matching/contradiction engine is intentionally conservative and may need coordinator review. Local landmark geocoding often needs town/state context. There is no live emergency service feed.
 
-No advanced account management, outbound messaging, embeddings, manual merge/split or full moderation workflow is included. Verification requests are stored internally; they do not contact a reporter. The browser UI can be redesigned independently using `UI_HANDOFF.md`.
+No advanced account management, outbound messaging, embeddings, manual merge/split or full moderation workflow is included. Verification requests are stored internally; they do not contact a reporter.
 
 SignalCheck summarizes community-reported information and does not guarantee safety. Conditions can change quickly. Use local official guidance and emergency channels where available.
 
