@@ -36,6 +36,7 @@ export function createPlaceSeed(places: DemoPlace[], now = Date.now()): Store {
     serialized = serialized.replaceAll(name, aliases[index]);
   });
   serialized = serialized
+    .replaceAll(", Lagos", "")
     .replaceAll("warehouse", "roadside kiosk")
     .replaceAll("bridge", "market access road");
   const seed: Store = JSON.parse(serialized);
@@ -67,8 +68,25 @@ export function createPlaceSeed(places: DemoPlace[], now = Date.now()): Store {
 /** Remove the old fixtures and their dependent records, preserving all submitted reports. */
 export function replaceSeededData(current: Store, seed: Store): Store {
   const old = createSeed(0);
-  const incidentIds = new Set(old.incidents.map((i) => i.id));
-  const reportIds = new Set(old.reports.map((r) => r.id));
+  const incidentIds = new Set([
+    ...old.incidents.map((i) => i.id),
+    ...seed.incidents.map((i) => i.id),
+    ...current.incidents
+      .filter((i) => i.isDemo && /^00000001-0000-4000-8000-\d{12}$/.test(i.id))
+      .map((i) => i.id),
+  ]);
+  const reportIds = new Set([
+    ...old.reports.map((r) => r.id),
+    ...seed.reports.map((r) => r.id),
+    ...current.reports
+      .filter(
+        (r) =>
+          r.incidentId &&
+          incidentIds.has(r.incidentId) &&
+          r.sourceFingerprint.startsWith("seed-"),
+      )
+      .map((r) => r.id),
+  ]);
   if (
     current.reports.some(
       (r) =>

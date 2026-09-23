@@ -5,10 +5,12 @@ import { join } from "node:path";
 import { z } from "zod";
 import { demoPlaces } from "../src/domain/demo-places";
 import { createPlaceSeed, replaceSeededData } from "../src/domain/place-seed";
+import { createJudgingSeed, judgingPlaces } from "../src/domain/judging-seed";
 import { createPresentationSeed } from "../src/domain/presentation-seed";
 import type { Store } from "../src/domain/types";
 config({ path: ".env.local", quiet: true });
 const apply = process.argv.includes("--apply");
+const judging = process.argv.includes("--judging");
 const presentation = process.argv.includes("--presentation");
 const detailsSchema = z.object({
   location: z.object({
@@ -20,7 +22,11 @@ async function main() {
   const key = process.env.GOOGLE_MAPS_API_KEY;
   if (!key) throw new Error("GOOGLE_MAPS_API_KEY is required.");
   const places = [];
-  for (const place of presentation ? demoPlaces.slice(0, 1) : demoPlaces) {
+  for (const place of judging
+    ? [...demoPlaces, ...judgingPlaces]
+    : presentation
+      ? demoPlaces.slice(0, 1)
+      : demoPlaces) {
     const response = await fetch(
       `https://places.googleapis.com/v1/places/${encodeURIComponent(place.id)}`,
       {
@@ -43,17 +49,21 @@ async function main() {
       },
     });
   }
-  const seed = presentation
-    ? createPresentationSeed(places[0])
-    : createPlaceSeed(places);
+  const seed = judging
+    ? createJudgingSeed(places)
+    : presentation
+      ? createPresentationSeed(places[0])
+      : createPlaceSeed(places);
   const directory = join(process.cwd(), ".data", "seed-backups");
   await mkdir(directory, { recursive: true });
   await writeFile(
     join(
       directory,
-      presentation
-        ? "prepared-presentation-seed.json"
-        : "prepared-google-seed.json",
+      judging
+        ? "prepared-judging-seed.json"
+        : presentation
+          ? "prepared-presentation-seed.json"
+          : "prepared-google-seed.json",
     ),
     JSON.stringify(seed, null, 2),
     { mode: 0o600 },

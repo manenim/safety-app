@@ -134,8 +134,17 @@ SignalCheck summarizes community-reported information and does not guarantee saf
 
 ## Abuja demo reports at real Google Places
 
-For a focused presentation, run `npm run seed:presentation`. This replaces the six seeded scenarios with one Airport Road, Lugbe incident and seven related reports: independent road-obstruction observations, a repeated rumour, a disputing observation, and a report of police directing traffic. Submitted reports are preserved and a private backup is saved before replacement. Use **Wuse Market, Abuja → Airport Road, Lugbe** for the route walkthrough. Run shortly before presenting so the observation timestamps are fresh; evidence continues to age normally.
+For a broader test dataset, run `npm run seed:judging`. It loads **12 incidents and 45 fictional reports at real Google Places**, including the Airport Road presentation scenario. The additional reports cover lane obstructions, conflicting access reports, traffic officers, power outages, and resolved market access around Abuja. Coordinates are fetched from Google Place Details; submitted reports are preserved and the previous database snapshot is backed up privately before replacement.
+
+Routes to try (select the matching Google suggestions):
+
+- **Wuse Market → Airport Road, Lugbe**: the presentation's corroborated obstruction and disputed rumour.
+- **Wuse Market → Banex Plaza wuse**: conflicting access reports near Banex.
+- **Aya Bus Stop → Apo Roundabout Bus Stop**: traffic officers at AYA and an emerging obstruction near Apo.
+- **1st Avenue, Gwarinpa → Kubwa Model Market**: a power outage and resolved market access.
+
+For a focused presentation, run `npm run seed:presentation`. This replaces the seeded scenarios with one Airport Road, Lugbe incident and seven related reports: independent road-obstruction observations, a repeated rumour, a disputing observation, and a report of police directing traffic. Submitted reports are preserved and a private backup is saved before replacement. Use **Wuse Market, Abuja → Airport Road, Lugbe** for the route walkthrough. Run shortly before presenting so the observation timestamps are fresh; evidence continues to age normally.
 
 `npm run seed:places` replaces the old six seed scenarios with 26 clearly fictional reports at Airport Road (Lugbe), Galadimawa Market, Lugbe Market, Area 1, Jabi Lake, and Wuse Market. It fetches coordinates from Google Place Details and uses the existing Supabase transaction RPC. It preserves submitted reports, removes the old seed's dependent records, and saves a private snapshot in `.data/seed-backups/` before committing. If a submitted report is attached to an old seed incident, replacement stops instead of removing that evidence.
 
-The feed shows type-specific report markers colored by evidence status. Route maps show A (start) and B (destination). Route checks include the seeded reports automatically. Nearby stale and resolved incidents appear for context, while only active evidence affects the route assessment. Seed evidence ages normally, so rerun `npm run seed:places` shortly before recording to refresh observation times. Use `npx tsx scripts/seed-google-places.ts` for a preview without database changes.
+The feed shows type-specific report markers colored by evidence status. Route maps use teal start pins and dark destination pins. Route checks include the seeded reports automatically. Nearby stale and resolved incidents appear for context, while only active evidence affects the route assessment. Seed evidence ages normally, so rerun `npm run seed:judging` shortly before testing to refresh observation times. Use `npx tsx scripts/seed-google-places.ts --judging` for a preview without database changes.
